@@ -33,7 +33,7 @@ Upstream notices and the full license text are unchanged. This derivative is
 redistributed under the same Apache-2.0 license.
 
 The MLX model definition (`nanbeige.py`) is MIT-licensed source code from the
-`mlx-nanbeige` project; the weights themselves remain Apache-2.0.
+`nanbeige-mlx` project; the weights themselves remain Apache-2.0.
 """
 
 
@@ -61,13 +61,13 @@ An MLX conversion and {bits}-bit quantization (group size {group_size}) of
 [`Nanbeige/Nanbeige4.2-3B`](https://huggingface.co/Nanbeige/Nanbeige4.2-3B) — a
 3-billion-parameter **Looped Transformer** (`num_loops=2`, weight-shared over 22
 layers for an effective depth of 44). Produced by the independent
-[`mlx-nanbeige`](https://github.com/jishnuvenugopal/mlx-nanbeige) project;
+[`nanbeige-mlx`](https://github.com/jishnuvenugopal/nanbeige-mlx) project;
 not affiliated with the Nanbeige team.
 
 ## Load (no conversion step)
 
 ```python
-from mlx_nanbeige import pull
+from nanbeige_mlx import pull
 import mlx_lm
 model, tok = mlx_lm.load(pull("{bits}bit"))
 ```
@@ -85,7 +85,7 @@ to reduce KV precision instead.
 ## License
 
 Apache-2.0 (the upstream license; quantization is a modification under §4(d)).
-The `nanbeige.py` model definition is MIT-licensed source from `mlx-nanbeige`.
+The `nanbeige.py` model definition is MIT-licensed source from `nanbeige-mlx`.
 See `LICENSE` and `NOTICE`.
 """
 
@@ -164,7 +164,7 @@ def upload(model_dir: str | Path, repo_id: str, *, dry_run: bool = True) -> None
 
 def main(argv: list[str] | None = None) -> None:  # pragma: no cover
     ap = argparse.ArgumentParser(
-        prog="mlx-nanbeige-upload",
+        prog="nanbeige-mlx-upload",
         description="Write a proper model card + LICENSE + NOTICE and upload a Nanbeige MLX quant.",
     )
     ap.add_argument("--model-dir", required=True)

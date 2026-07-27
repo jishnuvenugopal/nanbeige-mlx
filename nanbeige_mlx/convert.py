@@ -214,7 +214,7 @@ def main(argv: list[str] | None = None) -> None:  # pragma: no cover
     import argparse
 
     ap = argparse.ArgumentParser(
-        prog="mlx-nanbeige-convert",
+        prog="nanbeige-mlx-convert",
         description="Convert Nanbeige4.2-3B HF weights to a quantized MLX repo.",
     )
     ap.add_argument("--src", required=True, help="local Nanbeige HF repo (left untouched)")

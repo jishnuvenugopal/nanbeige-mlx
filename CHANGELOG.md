@@ -5,7 +5,7 @@ Follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) loosely and
 
 ## [0.2.0] — 2026-07-26
 
-First release of `mlx-nanbeige` as a standalone package. 0.1.0 lived inside the
+First release of `nanbeige-mlx` as a standalone package. 0.1.0 lived inside the
 evaluation harness repo and was never published.
 
 ### Added

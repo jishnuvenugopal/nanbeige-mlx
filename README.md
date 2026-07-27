@@ -1,8 +1,8 @@
-# mlx-nanbeige
+# nanbeige-mlx
 
 An MLX port of the **Nanbeige4.2-3B *Looped Transformer*** for Apple Silicon,
 plus the HF→MLX conversion and publishing helpers. The model definition in
-[`mlx_nanbeige/model.py`](mlx_nanbeige/model.py) is the **single source of truth**
+[`nanbeige_mlx/model.py`](nanbeige_mlx/model.py) is the **single source of truth**
 for the port — it is also copied verbatim into each converted weight directory
 as the `model_file` mlx-lm loads.
 
@@ -13,15 +13,15 @@ Nanbeige team.
 
 | module | purpose |
 |---|---|
-| `mlx_nanbeige/model.py` | the port — also the shipped `model_file` |
-| `mlx_nanbeige/convert.py` | HF → MLX quant (non-mutating staging, tokenizer verify) |
-| `mlx_nanbeige/upload.py` | model-card + LICENSE + NOTICE + (opt-in) HF upload |
-| `mlx_nanbeige/pull.py` | `pull("4bit")` → local path for `mlx_lm.load` |
+| `nanbeige_mlx/model.py` | the port — also the shipped `model_file` |
+| `nanbeige_mlx/convert.py` | HF → MLX quant (non-mutating staging, tokenizer verify) |
+| `nanbeige_mlx/upload.py` | model-card + LICENSE + NOTICE + (opt-in) HF upload |
+| `nanbeige_mlx/pull.py` | `pull("4bit")` → local path for `mlx_lm.load` |
 
 ## Load a published quant (one line)
 
 ```python
-from mlx_nanbeige import pull
+from nanbeige_mlx import pull
 import mlx_lm
 model, tok = mlx_lm.load(pull("4bit"))
 ```
@@ -29,7 +29,7 @@ model, tok = mlx_lm.load(pull("4bit"))
 ## Convert from the BF16 checkpoint yourself
 
 ```bash
-mlx-nanbeige-convert --src /path/to/Nanbeige4.2-3B --out ./nanbeige-mlx-4bit --bits 4
+nanbeige-mlx-convert --src /path/to/Nanbeige4.2-3B --out ./nanbeige-mlx-4bit --bits 4
 ```
 
 The source directory is never mutated; the tokenizer round-trip is asserted.

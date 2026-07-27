@@ -3,7 +3,7 @@
 # MLX port of the Nanbeige *Looped Transformer* (Nanbeige4.2-3B).
 #
 # This file is the single source of truth for the port. It is dual-purpose:
-#   1. Importable as ``mlx_nanbeige.model`` (the package this file ships in).
+#   1. Importable as ``nanbeige_mlx.model`` (the package this file ships in).
 #   2. A self-contained ``model_file`` that mlx-lm can import directly from a
 #      converted weight directory (see ``config.json`` -> ``"model_file"``), so
 #      anyone can ``mlx_lm.load`` a converted Nanbeige repo without a registry
@@ -56,7 +56,7 @@ try:
     from mlx_lm.models.cache import KVCache
 except ImportError as exc:  # pragma: no cover - exercised only on bad installs
     raise ImportError(
-        "mlx_nanbeige requires mlx-lm >= 0.31 (tested 0.31.3) and mlx >= 0.32. "
+        "nanbeige_mlx requires mlx-lm >= 0.31 (tested 0.31.3) and mlx >= 0.32. "
         "The internal helpers this model_file uses "
         "(mlx_lm.models.base.{scaled_dot_product_attention,create_attention_mask}, "
         "mlx_lm.models.cache.KVCache) moved or were removed in your version. "

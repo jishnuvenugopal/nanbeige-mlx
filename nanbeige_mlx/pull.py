@@ -3,7 +3,7 @@
 Wraps :func:`huggingface_hub.snapshot_download` with the repo ids baked in, so
 the user experience is a one-liner with no conversion step::
 
-    from mlx_nanbeige import pull
+    from nanbeige_mlx import pull
     import mlx_lm
     model, tok = mlx_lm.load(pull("4bit"))
 

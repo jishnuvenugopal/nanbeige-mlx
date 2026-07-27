@@ -1,0 +1,90 @@
+# Copy this to the PORT repo as .github/workflows/publish.yml
+#   cp port-repo-publish.yml /tmp/nanbeige-mlx-split/.github/workflows/publish.yml
+#
+# Trusted Publishing (OIDC) — no API token is ever stored. PyPI verifies the
+# workflow's identity claim: repo + workflow filename + environment must match
+# the pending publisher configured at pypi.org / test.pypi.org.
+#
+# Two ways in:
+#   * push a tag matching v*        -> publishes to real PyPI
+#   * Actions -> Run workflow       -> choose testpypi or pypi manually
+#
+# The `environment:` blocks are load-bearing. PyPI's publisher config includes
+# the environment name, and GitHub only mints an OIDC token scoped to it when
+# the job declares it. Create both under Settings -> Environments in the repo.
+
+name: publish
+
+on:
+  push:
+    tags: ["v*"]
+  workflow_dispatch:
+    inputs:
+      target:
+        description: "Where to publish"
+        required: true
+        default: testpypi
+        type: choice
+        options: [testpypi, pypi]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Build
+        run: |
+          python -m pip install -U pip build twine
+          python -m build
+
+      - name: Validate
+        run: |
+          twine check dist/*
+          # py.typed must ship or the type hints are useless downstream
+          python - <<'PY'
+          import glob, zipfile, sys
+          whl = glob.glob("dist/*.whl")[0]
+          names = zipfile.ZipFile(whl).namelist()
+          assert "nanbeige_mlx/py.typed" in names, f"py.typed missing from {whl}"
+          print("py.typed present in", whl)
+          PY
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: dist
+          path: dist/
+
+  testpypi:
+    needs: build
+    if: github.event_name == 'workflow_dispatch' && inputs.target == 'testpypi'
+    runs-on: ubuntu-latest
+    environment: testpypi
+    permissions:
+      id-token: write          # REQUIRED for OIDC; without it the upload 403s
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: dist
+          path: dist/
+      - uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          repository-url: https://test.pypi.org/legacy/
+
+  pypi:
+    needs: build
+    if: github.event_name == 'push' || inputs.target == 'pypi'
+    runs-on: ubuntu-latest
+    environment: pypi
+    permissions:
+      id-token: write
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: dist
+          path: dist/
+      - uses: pypa/gh-action-pypi-publish@release/v1

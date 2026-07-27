@@ -13,7 +13,7 @@ from __future__ import annotations
 
 import mlx.core as mx
 
-from mlx_nanbeige.model import Model, ModelArgs
+from nanbeige_mlx.model import Model, ModelArgs
 
 
 def _tiny_model(num_loops: int = 2, num_layers: int = 2) -> Model:
