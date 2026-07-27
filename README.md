@@ -45,8 +45,25 @@ design, not a bug — see `make_cache()`'s docstring.
 
 ## Dependencies
 
-Pinned to `mlx>=0.32` and `mlx-lm>=0.31` (the shipped `model_file` uses
-`mlx_lm.models.base` / `.cache` internals; see `model.py`).
+Upper-bounded to `mlx>=0.32,<0.34` and `mlx-lm>=0.31,<0.33`. The bounds are
+deliberate: `model.py` uses `mlx_lm.models.base` / `.cache` internals and is
+copied verbatim into every published weight repo as the `model_file`, where it
+is frozen — a user who already downloaded a quant cannot receive a patch.
+Relaxing the bound is a decision to make after testing against a new mlx-lm.
+
+## Fidelity status
+
+This port is validated by behaviour, not bit-parity: per-layer arithmetic
+agrees with the reference's own `NanbeigeDecoderLayer` to fp32 precision, the
+44-slot loop-aware KV cache passes a prefill-vs-incremental-decode equality
+test, and the port's two code paths are bit-identical. End-to-end next-token
+logit cosine against the HF reference is 0.847 (top-1 agreement 83%), lower
+than a faithful port should give; six candidate causes have been eliminated by
+measurement. The full record — including every falsified hypothesis — is in
+the evaluation harness repo's
+[`docs/investigation-log.md`](https://github.com/jishnuvenugopal/nanbeige-mlx-eval/blob/main/docs/investigation-log.md).
+Behaviour on the bilingual agentic suite is unaffected (26–28/30 across
+4/6/8-bit).
 
 ## License
 
