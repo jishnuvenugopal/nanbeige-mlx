@@ -15,7 +15,20 @@ module does NOT push, it prepares everything up to it.
 from __future__ import annotations
 
 import argparse
+import fnmatch
 from pathlib import Path
+
+
+UPLOAD_IGNORE_PATTERNS = [
+    "__pycache__/**",
+    "**/__pycache__/**",
+    "*.pyc",
+    "**/*.pyc",
+    ".DS_Store",
+    "**/.DS_Store",
+    "*.egg-info/**",
+    "**/*.egg-info/**",
+]
 
 # Apache-2.0 §4(d): state what changed.
 NOTICE_TEMPLATE = """\
@@ -159,7 +172,15 @@ def upload(model_dir: str | Path, repo_id: str, *, dry_run: bool = True) -> None
 
     write_card(d, bits, group_size)
 
-    files = sorted(p.name for p in d.iterdir() if p.is_file())
+    files = sorted(
+        rel
+        for p in d.rglob("*")
+        if p.is_file()
+        and not any(
+            fnmatch.fnmatch((rel := p.relative_to(d).as_posix()), pattern)
+            for pattern in UPLOAD_IGNORE_PATTERNS
+        )
+    )
     print(f"repo: {repo_id}")
     print(f"model_dir: {d}")
     print(f"quantization: {bits}-bit, group_size={group_size}")
@@ -174,8 +195,13 @@ def upload(model_dir: str | Path, repo_id: str, *, dry_run: bool = True) -> None
     from huggingface_hub import HfApi  # type: ignore
 
     api = HfApi()
-    api.create_repo(repo_id=repo_id, exist_ok=True)
-    api.upload_folder(folder_id=str(d), repo_id=repo_id, repo_type="model")
+    api.create_repo(repo_id=repo_id, repo_type="model", exist_ok=True)
+    api.upload_folder(
+        folder_path=str(d),
+        repo_id=repo_id,
+        repo_type="model",
+        ignore_patterns=UPLOAD_IGNORE_PATTERNS,
+    )
     print(f"\nuploaded to {repo_id}")
 
 
@@ -197,7 +223,7 @@ def main(argv: list[str] | None = None) -> None:  # pragma: no cover
         help="actually upload (requires `huggingface-cli login`)",
     )
     a = ap.parse_args(argv)
-    upload(a.model_dir, a.repo_id, dry_run=not a.yes)
+    upload(a.model_dir, a.repo_id, dry_run=a.dry_run or not a.yes)
 
 
 if __name__ == "__main__":  # pragma: no cover
