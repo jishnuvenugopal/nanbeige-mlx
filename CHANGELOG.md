@@ -3,6 +3,16 @@
 Follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) loosely and
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.2.1] — 2026-07-28
+
+### Fixed
+
+- **The documented top-level `pull` import is callable.** Python resolves
+  `from nanbeige_mlx import pull` to the `nanbeige_mlx.pull` submodule before
+  the package's former lazy `__getattr__` export can run. The package now
+  explicitly re-exports the function, with a regression test covering the
+  documented `pull("4bit")` API.
+
 ## [0.2.0] — 2026-07-26
 
 First release of `nanbeige-mlx` as a standalone package. 0.1.0 lived inside the
